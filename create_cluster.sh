@@ -51,7 +51,7 @@ cs_url=$(python get_k8s_url.py)
 echo "Maybe Creating K8S Cluster takes a while"
 
 
-echo "Please wait."
+echo -n "Please wait."
 while :
 do
     flag=0
