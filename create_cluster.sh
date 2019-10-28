@@ -1,3 +1,4 @@
+num_containers=2
 if ! which terraform >/dev/null 2>&1 ;
 then
     echo "need terraform"
@@ -44,9 +45,9 @@ echo "Done creating config"
 
 echo "Create K8S Cluster"
 kubectl create namespace jupyter
-kubectl apply -f k8s/1_jupyter-nas.yaml -n jupyter
+kubectl apply -f ./k8s/1_jupyter-nas.yaml -n jupyter
 cs_url=$(python get_k8s_url.py)
-./k8s/2_kubectl_apply.sh 2 ${cs_url}
+./k8s/2_kubectl_apply.sh ${num_containers} ${cs_url}
 echo "Maybe Creating K8S Cluster takes a while"
 
 
