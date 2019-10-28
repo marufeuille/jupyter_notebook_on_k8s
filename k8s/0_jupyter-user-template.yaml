@@ -14,20 +14,9 @@ spec:
       labels:
         app: JUPYTER_USER
     spec:
-      initContainers:
-      - name: busybox
-        image: busybox
-        command:
-        - wget
-        - "< code.zip url >"
-        - "-O"
-        - "/home/jovyan/work/code.zip"
-        volumeMounts:
-          - name: jupyter-work
-            mountPath: "/home/jovyan/work"
       containers:
-      - name: minimal-notebook
-        image: jooooe/aliyun_jupyter_minimal
+      - name: notebook
+        image: marufeuille/notebook
         ports:
         - containerPort: 8888
         command: ["start-notebook.sh"]
