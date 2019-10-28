@@ -31,7 +31,7 @@ terraform init
 echo "Done Initializing Terraform"
 
 echo "Build Infrastructure with Terraform"
-terraform apply
+terraform apply -auto-approve
 echo "Done Building Infrastructure"
 
 echo "Get and Set .kube/config"
