@@ -38,5 +38,41 @@ python get_kubeconfig.py
 echo "Done setting .kube/config"
 
 echo "Create config need by k8s"
-python create-yaml.py
+python create_yaml.py
 echo "Done creating config"
+
+
+echo "Create K8S Cluster"
+kubectl create namespace jupyter
+kubectl apply -f k8s/1_jupyter-nas.yaml -n jupyter
+cs_url=$(python get_k8s_url.py)
+./k8s/2_kubectl_apply.sh 2 ${cs_url}
+echo "Maybe Creating K8S Cluster takes a while"
+
+
+echo "Please wait."
+while :
+do
+    flag=0
+    for status in $(kubectl get pods -n jupyter | sed -E 's/[ \t]+/ /g' | cut -d " " -f 3 | sed '1d') ;
+    do
+        if [ $status != "Running" ] ;
+        then
+            flag=1
+        fi
+    done
+    if [ $flag = 0 ] ;
+    then
+        break
+    fi
+    echo -n "."
+    sleep 5
+done
+echo
+
+for pod in $(kubectl get po -n jupyter | grep user | cut -d ' ' -f 1)  ;
+do
+    token=$(kubectl logs $pod -n jupyter | grep "] http://user" | cut -d '=' -f 2)
+    user=$(echo $pod | cut -d '-' -f 1)
+    echo "${pod},http://${user}.${cs_url}?token=${token}"
+done
