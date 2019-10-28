@@ -31,3 +31,4 @@ override.tf.json
 # example: *tfplan*
 
 k8s/1_jupyter-nas.yaml
+.ingress.yaml
