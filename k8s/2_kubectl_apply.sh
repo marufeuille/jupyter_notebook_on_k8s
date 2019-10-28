@@ -24,13 +24,13 @@ NUM_USER=$1
 CLUSTER_DOMAIN=$2
 
 # 設定前のJupyter file
-JUPYTER_TEPLATE_YAML="./0_jupyter-user-template.yaml"
+JUPYTER_TEPLATE_YAML="./k8s/0_jupyter-user-template.yaml"
 
 # 設定前のIngress yaml
-INGRESS_YAML="./0_ingress.yaml"
+INGRESS_YAML="./k8s/0_ingress.yaml"
 
 # Ingress rule template
-INGRESS_RULE="./0_rules_template.txt"
+INGRESS_RULE="./k8s/0_rules_template.txt"
 
 # Namespace
 NAMESPACE="jupyter"
@@ -94,28 +94,4 @@ done
 echo -e "--------------- Ingress YAML ---------------"
 cat .ingress.yaml
 kubectl apply -n ${NAMESPACE} -f .ingress.yaml
-echo -e "------------------------------------------- \n"
-
-######################################
-# TODO -> PodのStatusの確認
-######################################
-# while ${not_running_status}==true
-# do
-#     tmp_data=`kubectl get po | grep user | cut -d ' ' -f 9`
-#     array_status=(`echo $tmp_data`)
-#     sleep 3
-# done
-
-sleep 10s
-######################################
-# Jupyter の Token を取得
-######################################
-echo -e "--------------- Toke of pod ---------------"
-pod_data=`kubectl get po -n ${NAMESPACE} | grep user | cut -d ' ' -f 1`
-array_pod=(`echo ${pod_data}`)
-for pod in ${array_pod[@]}
-do
-    token=`kubectl logs $pod -n ${NAMESPACE} | grep "] http://user" | cut -d '=' -f 2`
-    echo "${pod} : ${token}"    
-done
 echo -e "------------------------------------------- \n"
