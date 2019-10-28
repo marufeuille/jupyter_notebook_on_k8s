@@ -215,7 +215,7 @@ resource "alicloud_instance" "instance" {
   internet_charge_type       = "PayByTraffic"
   instance_charge_type       = "PostPaid"
   password                   = "${var.ecs_password}"
-  user_data                  = "#!/bin/bash\nyum update -y && yum -y install nfs-utils\nsudo mount  -t nfs -o vers=3,nolock,proto=tcp,noresvport ${alicloud_nas_mount_target.jupyter_mount_target_vs2.id}:/ /mnt && mkdir /mnt/share\n"
+  user_data                  = "#!/bin/bash\nyum update -y && yum -y install nfs-utils\nsudo mount  -t nfs -o vers=3,nolock,proto=tcp,noresvport ${alicloud_nas_mount_target.jupyter_mount_target_vs2.id}:/ /mnt && mkdir /mnt/shared-data\n"
 }
 
 # permit RW Access Management ECS to NAS
