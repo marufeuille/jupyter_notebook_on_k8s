@@ -15,5 +15,9 @@
 2. create_cluster.shを開き、冒頭のnum_containersを好きな数に書き換える
 3. ./create_cluster.sh
 
+## NASからworkへのファイルコピー
+1. file_copy_from_nas_to_work.shを開き、冒頭にあるfilesにコピーさせたいファイル名を空白区切りで列挙する。ファイルは/shared-data/に置かれていること
+2. ./file_copy_from_nas_to_work.sh
+
 ## 後始末
 1. terraform destroy
