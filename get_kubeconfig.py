@@ -1,6 +1,7 @@
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcs.request.v20151215 import DescribeClusterUserKubeconfigRequest
 import json
+import os
 
 with open("./terraform.tfvars") as f:
     for line in f.readlines():
@@ -24,8 +25,16 @@ client = AcsClient(
    secretkey,
    region
 )
+home = os.path.expanduser("~")
+if not os.path.exists("{}/.kube".format(home)):
+    os.makedirs("{}/.kube".format(home))
+
+if os.path.exists("{}/.kube/config".format(home)):
+    print("backup current config")
+    os.rename("{}/.kube/config".format(home), "{}/.kube/config_old".format(home))
 
 req = DescribeClusterUserKubeconfigRequest.DescribeClusterUserKubeconfigRequest()
 req.set_ClusterId(cs_id)
 body = client.do_action_with_exception(req)
-print(body)
+with open("{}/.kube/config".format(home), "w") as f:
+    f.write(json.loads(body)["config"].strip()) 
