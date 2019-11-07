@@ -26,6 +26,8 @@ fi
 pip install aliyun-python-sdk-core-v3
 pip install aliyun-python-sdk-cs
 
+cat terraform.tf.tmpl | sed s/NUM_USER/$num_containers/ > terraform.tf
+
 echo "Initializing Terraform"
 terraform init
 echo "Done Initializing Terraform"

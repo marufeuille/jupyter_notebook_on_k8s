@@ -32,3 +32,4 @@ override.tf.json
 
 .ingress.yaml
 list.csv
+terraform.tf
