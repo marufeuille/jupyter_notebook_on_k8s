@@ -24,7 +24,7 @@ NUM_USER=$1
 CLUSTER_DOMAIN=$2
 
 # 設定前のJupyter file
-JUPYTER_TEPLATE_YAML="./k8s/0_jupyter-user-template.yaml"
+JUPYTER_TEPLATE_YAML="./k8s/0_jupyter-user-template.yaml.tmpl"
 
 # 設定前のIngress yaml
 INGRESS_YAML="./k8s/0_ingress.yaml"
@@ -69,6 +69,7 @@ function check_params () {
 # paramsの確認
 check_params ${PARAMS}
 
+touch list.csv
 ######################################
 # UserごとにDeployment, Serviceの作成
 ######################################
@@ -79,8 +80,13 @@ do
     echo "${response}"
     echo -e "---------------------------------------------- \n"
     echo -e "----- kubectl apply -f YAML of user$i -----"
-    cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/ | kubectl apply -n ${NAMESPACE} -f -
+    export TOKEN=$(python pass_gen.py)
+    export i
+    export JUPYTER_TEPLATE_YAML
+    eval "echo \"$(cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/)\"" 
+    eval "echo \"$(cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/)\"" | kubectl apply -n ${NAMESPACE} -f -
     echo -e "----------------------------------------------\n"
+    echo "user${i},http://user${i}.${CLUSTER_DOMAIN}/?token=${TOKEN}" >> list.csv
 done
 
 ######################################

@@ -17,9 +17,18 @@ spec:
       containers:
       - name: notebook
         image: marufeuille/notebook
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: 1
+        env:
+          - name: TOKEN
+            value: ${TOKEN}
         ports:
         - containerPort: 8888
-        command: ["start-notebook.sh"]
         volumeMounts:
           - name: nas
             mountPath: "/home/jovyan/shared-data"

@@ -32,3 +32,4 @@ override.tf.json
 
 k8s/1_jupyter-nas.yaml
 .ingress.yaml
+list.csv
