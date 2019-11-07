@@ -24,7 +24,7 @@ NUM_USER=$1
 CLUSTER_DOMAIN=$2
 
 # 設定前のJupyter file
-JUPYTER_TEPLATE_YAML="./k8s/0_jupyter-user-template.yaml.tmpl"
+JUPYTER_TEPLATE_YAML="./k8s/0_jupyter-user-template.yaml"
 
 # 設定前のIngress yaml
 INGRESS_YAML="./k8s/0_ingress.yaml"
@@ -80,11 +80,8 @@ do
     echo "${response}"
     echo -e "---------------------------------------------- \n"
     echo -e "----- kubectl apply -f YAML of user$i -----"
-    export TOKEN=$(python pass_gen.py)
-    export i
-    export JUPYTER_TEPLATE_YAML
-    eval "echo \"$(cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/)\"" 
-    eval "echo \"$(cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/)\"" | kubectl apply -n ${NAMESPACE} -f -
+    TOKEN=$(python pass_gen.py)
+    cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/ | sed s/FIXED_TOKEN/${TOKEN}/ | kubectl apply -n ${NAMESPACE} -f -
     echo -e "----------------------------------------------\n"
     echo "user${i},http://user${i}.${CLUSTER_DOMAIN}/?token=${TOKEN}" >> list.csv
 done
