@@ -33,6 +33,7 @@ variable nat_gateway_specification {}
 # NAS 関連
 ##################################################
 variable nas_access_group_name {}
+variable nas_access_group2_name {}
 
 ##################################################
 # Log Service 関連
@@ -137,11 +138,25 @@ resource "alicloud_nas_access_group" "jupyter_access_group" {
   type        = "Vpc"
 }
 
+resource "alicloud_nas_access_group" "jupyter_access_group_for_work" {
+  name        = "${var.nas_access_group2_name}"
+  type        = "Vpc"
+}
+
 resource "alicloud_nas_access_rule" "jupyter_access_rule-1" {
   access_group_name = "${alicloud_nas_access_group.jupyter_access_group.id}"
   source_cidr_ip    = "${alicloud_vswitch.vswitch_1.cidr_block}"
   rw_access_type    = "RDONLY"
   user_access_type  = "all_squash"
+  priority          = 2
+
+}
+
+resource "alicloud_nas_access_rule" "jupyter_access_rule-3" {
+  access_group_name = "${alicloud_nas_access_group.jupyter_access_group_for_work.id}"
+  source_cidr_ip    = "${alicloud_vswitch.vswitch_1.cidr_block}"
+  rw_access_type    = "RDWR"
+  user_access_type  = "no_squash"
   priority          = 2
 
 }
@@ -154,8 +169,8 @@ resource "alicloud_nas_mount_target" "jupyter_mount_target_vs1" {
 
 resource "alicloud_nas_mount_target" "jupyter_mount_target_vs2" {
   file_system_id    = "${alicloud_nas_file_system.jupyter_nas.id}"
-  access_group_name = "${alicloud_nas_access_group.jupyter_access_group.id}"
-  vswitch_id        = "${alicloud_vswitch.vswitch_2.id}"
+  access_group_name = "${alicloud_nas_access_group.jupyter_access_group_for_work.id}"
+  vswitch_id        = "${alicloud_vswitch.vswitch_1.id}"
 }
 
 ############################################
@@ -215,7 +230,7 @@ resource "alicloud_instance" "instance" {
   internet_charge_type       = "PayByTraffic"
   instance_charge_type       = "PostPaid"
   password                   = "${var.ecs_password}"
-  user_data                  = "#!/bin/bash\nyum update -y && yum -y install nfs-utils\nsudo mount  -t nfs -o vers=3,nolock,proto=tcp,noresvport ${alicloud_nas_mount_target.jupyter_mount_target_vs2.id}:/ /mnt && mkdir /mnt/shared-data\nfor ((i=1; i <= NUM_USER; i ++)) do mkdir -p /mnt/work/user${i}; done\n"
+  user_data                  = "#!/bin/bash\nyum update -y && yum -y install nfs-utils\nsudo mount  -t nfs -o vers=3,nolock,proto=tcp,noresvport ${alicloud_nas_mount_target.jupyter_mount_target_vs1.id}:/ /mnt && mkdir /mnt/shared-data\nmkdir -p /work && mount  -t nfs -o vers=3,nolock,proto=tcp,noresvport ${alicloud_nas_mount_target.jupyter_mount_target_vs2.id}:/ /work\nfor ((i=1; i <= NUM_USER; i ++)) do mkdir -p /work/user$i; done\n"
 }
 
 # permit RW Access Management ECS to NAS

@@ -39,7 +39,8 @@ spec:
         persistentVolumeClaim:
           claimName: pvc-nas
       - name: "jupyter-work"
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: pvc-nas-userUSER_ID
 ---
 kind: Service
 apiVersion: v1

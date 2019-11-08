@@ -42,8 +42,12 @@ echo "Done setting .kube/config"
 
 echo "Create K8S Cluster"
 kubectl create namespace jupyter
-NFS_SERVER=$(python get_nfs_server.py)
-cat k8s/1_jupyter-nas.yaml | sed s/NFS_SERVER_NAME/${NFS_SERVER}/ | kubectl apply -n jupyter -f -
+NFS_SERVER_SHARE=$(python get_nfs_server.py 1)
+NFS_SERVER_WORK=$(python get_nfs_server.py 2)
+cat k8s/1_jupyter-nas.yaml | sed s/NFS_SERVER_NAME/${NFS_SERVER_SHARE}/ | kubectl apply -n jupyter -f -
+for ((i=1; i <= num_containers; i ++ )) do
+    cat k8s/3_jupyter-nas-work.yaml | sed s/NFS_SERVER_NAME/${NFS_SERVER_WORK}/  | sed s/USER_ID/${i}/ | kubectl apply -n jupyter -f -
+done
 cs_url=$(python get_k8s_url.py)
 ./k8s/2_kubectl_apply.sh ${num_containers} ${cs_url}
 echo "Maybe Creating K8S Cluster takes a while"

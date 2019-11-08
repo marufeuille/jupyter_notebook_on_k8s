@@ -69,6 +69,7 @@ function check_params () {
 # paramsの確認
 check_params ${PARAMS}
 
+rm -f list.csv
 touch list.csv
 ######################################
 # UserごとにDeployment, Serviceの作成
@@ -81,7 +82,7 @@ do
     echo -e "---------------------------------------------- \n"
     echo -e "----- kubectl apply -f YAML of user$i -----"
     TOKEN=$(python pass_gen.py)
-    cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/ | sed s/FIXED_TOKEN/${TOKEN}/ | kubectl apply -n ${NAMESPACE} -f -
+    cat ${JUPYTER_TEPLATE_YAML} | sed s/JUPYTER_USER/user$i/ | sed s/USER_ID/$i/ | sed s/FIXED_TOKEN/${TOKEN}/ | kubectl apply -n ${NAMESPACE} -f -
     echo -e "----------------------------------------------\n"
     echo "user${i},http://user${i}.${CLUSTER_DOMAIN}/?token=${TOKEN}" >> list.csv
 done
