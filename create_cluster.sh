@@ -73,9 +73,4 @@ do
 done
 echo
 
-for pod in $(kubectl get po -n jupyter | grep user | cut -d ' ' -f 1)  ;
-do
-    token=$(kubectl logs $pod -n jupyter | grep "] http://user" | cut -d '=' -f 2)
-    user=$(echo $pod | cut -d '-' -f 1)
-    echo "${pod},http://${user}.${cs_url}?token=${token}"
-done
+cat list.csv
